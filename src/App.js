@@ -17,6 +17,20 @@ const dbname = "auditoria-medica";
 const model = "am.incedente";
 const host = "http://192.168.0.102:8888";
 
+// TODO se puede usar tambien FLUX
+
+const originalState = {
+    countdown: 0,
+    classification: '',
+    subTree: [],
+    answer: '',
+    final: false,
+    navigation: '',
+    serverResponse: false,
+    disabled: false,
+    comments: ''
+};
+
 class App extends Component {
 
     constructor(props) {
@@ -24,17 +38,7 @@ class App extends Component {
 
         this.isBlocked();
 
-        this.state = {
-            countdown: 0,
-            classification: '',
-            subTree: [],
-            answer: '',
-            final: false,
-            navigation: '',
-            serverResponse: false,
-            disabled: false,
-            comments: ''
-        };
+        this.state = originalState;
 
         this.handleAnswerSelected = this.handleAnswerSelected.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -49,7 +53,8 @@ class App extends Component {
 
     }
 
-    shuffleArray(array) {
+    // TODO mover a utils
+    shuffleArray(array) { 
         let currentIndex = array.length, temporaryValue, randomIndex;
 
         // While there remain elements to shuffle...
@@ -68,6 +73,7 @@ class App extends Component {
         return array;
     };
 
+    //  TODO podrìa ser tener un ID y guardar el padre en un ID
     getParent(navigation, actualClassification) {
 
         let prevNavigation = navigation.replace(classification_separator + actualClassification, "");  // Tipo de Incidente*
@@ -81,14 +87,8 @@ class App extends Component {
 
     }
 
+    // Inutil, sirve para 
     componentWillMount() {
-
-
-    }
-
-    componentDidMount() {
-
-        this.isBlocked();
 
         const options = classificationTree.map((classification) => this.shuffleArray(classification.subTree));
         this.setState({
@@ -97,6 +97,13 @@ class App extends Component {
             navigation: classificationTree[0].classification,
             subTree: options[0]
         });
+    }
+
+    // para ejecutar un jquery por ej, libs externas
+    componentDidMount() {
+
+        // this.isBlocked();
+
     }
 
     handleAnswerSelected(event) {
@@ -108,6 +115,8 @@ class App extends Component {
             comments: event.currentTarget.value
         })
     }
+
+
 
     findByAnswer(o, answer) {
         //Early return
@@ -182,7 +191,7 @@ class App extends Component {
     }
 
     handleCancel(event) {
-        window.location.reload();
+        this.setState(originalState);
     }
 
     handleSubmit(event) {
@@ -301,7 +310,10 @@ class App extends Component {
                 <img src={logo} className="App-logo" alt="logo"/>
                 <h2>Reporte de Incidentes</h2>
             </div>
-            {this.state.countdown > 0 ? this.renderTimer() : this.state.serverResponse ? this.renderServerResponse() : this.state.final ? this.renderResult() : this.renderClassification()}
+            
+            {// TODO refactor con if 
+                
+                this.state.countdown > 0 ? this.renderTimer() : this.state.serverResponse ? this.renderServerResponse() : this.state.final ? this.renderResult() : this.renderClassification()}
         </div>);
     }
 
